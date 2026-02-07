@@ -390,11 +390,63 @@ function App() {
         )}
       </div>
 
+      {/* More Resources Section */}
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center">More Places to Find Paid Studies</h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <ResourceCard
+            title="Prolific"
+            description="Online surveys & behavioral research. Easy to qualify, payments via PayPal."
+            url="https://www.prolific.co"
+            type="Surveys"
+            payRange="$8-15/hour"
+          />
+          <ResourceCard
+            title="Respondent"
+            description="User research & interviews. Higher-paying studies, often $75-300 per session."
+            url="https://www.respondent.io"
+            type="Interviews"
+            payRange="$75-300/study"
+          />
+          <ResourceCard
+            title="UserTesting"
+            description="Test websites & apps, share your feedback. Quick 10-20 minute sessions."
+            url="https://www.usertesting.com"
+            type="UX Research"
+            payRange="$4-120/test"
+          />
+          <ResourceCard
+            title="ResearchMatch"
+            description="Connect with researchers at top universities. Wide variety of studies."
+            url="https://www.researchmatch.org"
+            type="Clinical & Research"
+            payRange="Varies"
+          />
+          <ResourceCard
+            title="Recruit.me"
+            description="Clinical trial matching service. Get matched to trials in your area."
+            url="https://www.recruit.me"
+            type="Clinical Trials"
+            payRange="Varies"
+          />
+          <ResourceCard
+            title="CISCRP"
+            description="Search clinical research studies. Educational resources about trial participation."
+            url="https://www.ciscrp.org/education-center/search-clinical-trials"
+            type="Clinical Trials"
+            payRange="Varies"
+          />
+        </div>
+        <p className="text-center text-slate-500 text-sm mt-6">
+          💡 Tip: University research centers often post paid studies. Search "[your city] university paid research studies"
+        </p>
+      </div>
+
       {/* Footer */}
-      <footer className="bg-slate-800 text-slate-300 py-8 mt-12">
+      <footer className="bg-slate-800 text-slate-300 py-8">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <p className="text-sm">
-            Data sourced from ClinicalTrials.gov. Always verify compensation details directly with the study coordinator.
+            Clinical trial data from ClinicalTrials.gov. Always verify compensation details directly with study coordinators.
           </p>
         </div>
       </footer>
@@ -581,6 +633,34 @@ function TrialCard({ trial }) {
         </div>
       </div>
     </div>
+  );
+}
+
+// Resource Card Component for external links
+function ResourceCard({ title, description, url, type, payRange }) {
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg hover:border-emerald-300 transition-all group"
+    >
+      <div className="flex items-start justify-between mb-2">
+        <h3 className="font-semibold text-slate-800 group-hover:text-emerald-600 transition-colors">
+          {title}
+        </h3>
+        <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded">
+          {type}
+        </span>
+      </div>
+      <p className="text-sm text-slate-600 mb-3">{description}</p>
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-emerald-600">💰 {payRange}</span>
+        <span className="text-xs text-slate-400 group-hover:text-emerald-500 transition-colors">
+          Visit site →
+        </span>
+      </div>
+    </a>
   );
 }
 
