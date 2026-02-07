@@ -117,13 +117,17 @@ function App() {
     setSearched(true);
 
     try {
-      // Build query for healthy volunteer and paid studies
-      let query = 'AREA[HealthyVolunteers]Yes OR AREA[BriefSummary]compensation OR AREA[BriefSummary]paid OR AREA[BriefSummary]reimbursement';
-
-      // Add location filter
+      // Build location filter - use geo search for zip codes
       let locationFilter = '';
       if (filters.location) {
-        locationFilter = `&filter.locationSearch=${encodeURIComponent(filters.location)}`;
+        // Try to detect if it's a zip code (5 digits)
+        const isZip = /^\d{5}$/.test(filters.location.trim());
+        if (isZip) {
+          // Use geo distance filter for zip codes (50 mile radius)
+          locationFilter = `&filter.geo=distance(${filters.location},50mi)`;
+        } else {
+          locationFilter = `&filter.locationSearch=${encodeURIComponent(filters.location)}`;
+        }
       }
 
       // Add sex filter
@@ -132,22 +136,9 @@ function App() {
         sexFilter = `&filter.sex=${filters.sex === 'male' ? 'MALE' : 'FEMALE'}`;
       }
 
-      // Age filter
-      let ageFilter = '';
-      if (filters.ageRange !== 'all') {
-        const ageRanges = {
-          '18-30': { min: '18 Years', max: '30 Years' },
-          '31-50': { min: '31 Years', max: '50 Years' },
-          '51-65': { min: '51 Years', max: '65 Years' },
-          '65+': { min: '65 Years', max: '100 Years' }
-        };
-        const range = ageRanges[filters.ageRange];
-        if (range) {
-          // Age filtering is complex in the API, we'll filter client-side
-        }
-      }
-
-      const url = `https://clinicaltrials.gov/api/v2/studies?query.term=${encodeURIComponent(query)}&filter.overallStatus=RECRUITING${locationFilter}${sexFilter}&pageSize=50&fields=protocolSection`;
+      // Search for ALL recruiting trials (we'll prioritize paid ones client-side)
+      // This gives us more results to work with
+      const url = `https://clinicaltrials.gov/api/v2/studies?filter.overallStatus=RECRUITING${locationFilter}${sexFilter}&pageSize=100&fields=protocolSection`;
 
       const response = await fetch(url);
       const data = await response.json();
@@ -375,12 +366,19 @@ function App() {
         ) : (
           <>
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-slate-800">
-                {trials.length} Paid Studies Found
-              </h3>
-              <p className="text-sm text-slate-500">
-                Sorted by likelihood of compensation
-              </p>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800">
+                  {trials.length} Studies Found
+                </h3>
+                <p className="text-sm text-slate-500">
+                  {trials.filter(t => t.likelyPaid).length} likely paid • Sorted by compensation likelihood
+                </p>
+              </div>
+              {filters.location && (
+                <span className="text-sm bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">
+                  📍 Near {filters.location}
+                </span>
+              )}
             </div>
 
             <div className="grid gap-4">
